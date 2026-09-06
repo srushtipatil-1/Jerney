@@ -175,22 +175,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Checkov on Terraform
-        uses: bridgecrewio/checkov-action@v12
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          directory: terraform/
-          framework: terraform
-          soft_fail: false
-          skip_check: CKV_AWS_39,CKV_AWS_58  # Public EKS endpoint (intentional for dev)
-          output_format: cli
+          python-version: "3.11"
 
-      - name: Run Checkov on Kubernetes manifests
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: k8s/
-          framework: kubernetes
-          soft_fail: true  # Soft fail for K8s (some checks may not apply)
-          output_format: cli
+      # bridgecrewio/checkov-action@v12 builds --skip-check as one flag per
+      # value (--skip-check A --skip-check B), which crashes the checkov
+      # version currently behind that action with:
+      #   AssertionError: config parser should convert anything that is not
+      #   a list to string.
+      # Verified locally that calling checkov directly with a single
+      # comma-separated --skip-check works correctly, so we pin and invoke
+      # it directly instead of going through the action.
+      - name: Install Checkov
+        run: pip install checkov==3.3.16
+
+      - name: Run Checkov on Terraform (blocking)
+        run: checkov -d terraform/ --framework terraform --skip-check CKV_AWS_39,CKV_AWS_58 --compact
+        # Public EKS endpoint (CKV_AWS_39/58) skipped intentionally for dev kubectl access.
+        # No soft-fail here: a non-zero exit fails this job and blocks update-manifest below.
+
+      - name: Run Checkov on Kubernetes manifests (report-only)
+        run: checkov -d k8s/ --framework kubernetes --compact || true
+        # Intentionally non-blocking (soft-fail via `|| true`): K8s manifest
+        # findings are surfaced in the log but do not fail the pipeline today.
 
   # ==============================================================
   # STAGE 6: Dockerfile Lint (Hadolint)
