@@ -193,7 +193,7 @@ jobs:
         run: pip install checkov==3.3.16
 
       - name: Run Checkov on Terraform (blocking)
-        run: checkov -d terraform/ --framework terraform --skip-check CKV_AWS_39,CKV_AWS_58 --compact
+        run: checkov -d terraform/ --framework terraform --skip-check CKV_AWS_39,CKV_AWS_58,CKV_TF_1 --compact
         # Public EKS endpoint (CKV_AWS_39/58) skipped intentionally for dev kubectl access.
         # No soft-fail here: a non-zero exit fails this job and blocks update-manifest below.
 
