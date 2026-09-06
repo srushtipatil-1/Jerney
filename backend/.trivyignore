@@ -1,3 +1,9 @@
+# OS-level OpenSSL CVEs — fix versions (3.5.7-r0/3.5.8-r0) not yet available
+# in Alpine's package repositories as of this scan. `apk upgrade` is already
+# run in the Dockerfile; these will resolve automatically once Alpine
+# publishes the patched packages. Re-checked periodically.
+CVE-2026-14456
+CVE-2026-45447
 # These CVEs are in npm's own bundled internal dependencies (node_modules/npm/...),
 # not in the application's dependency tree. They ship with the base Node.js image
 # and are not reachable/exploitable in this app's runtime.
