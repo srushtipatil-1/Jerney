@@ -79,7 +79,7 @@ Fires on PR open/sync and POSTs the PR's metadata to an external webhook (`sim.a
 
 ### What "passing" actually means here
 
-The pipeline is a real gate for image vulnerabilities (Trivy), Dockerfile hygiene (Hadolint), and Terraform IaC (Checkov, once the module-pinning finding above is addressed) — a bad image or a genuinely risky Terraform change will fail the run and block the auto-update of the K8s manifest. It is **not** a gate for dependency vulnerabilities (SCA) or Kubernetes manifest hygiene (Checkov K8s) — those are visibility-only today, by explicit config choice (`soft_fail: true` / `|| true`), not by accident.
+The pipeline is a real gate for image vulnerabilities (Trivy), Dockerfile hygiene (Hadolint), and Terraform IaC (Checkov) — a bad image or a genuinely risky Terraform change will fail the run and block the auto-update of the K8s manifest. It is **not** a gate for dependency vulnerabilities (SCA) or Kubernetes manifest hygiene (Checkov K8s) — those are visibility-only today, by explicit config choice (`soft_fail: true` / `|| true`), not by accident.
 
 ---
 
